@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat viewer · TB</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.65 system-ui, sans-serif; color: #202c36; background: #f5f6f8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid #dce2e8; padding: 16px 24px; }
+    .toolbar { max-width: 1080px; margin: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    h1 { margin: 0; font-size: 20px; letter-spacing: -.5px; }
+    .open { margin-left: auto; cursor: pointer; background: #245d50; color: white; padding: 8px 16px; border-radius: 8px; font-weight: 600; }
+    .open:focus-within { outline: 3px solid #98c7ff; outline-offset: 3px; }
+    input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    #status { max-width: 1080px; margin: 8px auto 0; font-size: 13px; color: #5b6975; overflow-wrap: anywhere; }
+    #status.error { color: #a52c2c; }
+    main { max-width: 1080px; margin: 30px auto 80px; padding: 0 24px; }
+    .empty { text-align: center; padding: 70px 20px; color: #586673; }
+    .empty h2 { color: #202c36; font-size: 24px; }
+    .message { margin: 24px 0; max-width: 94%; }
+    .message.user { margin-left: auto; max-width: 84%; }
+    .meta { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 0 4px 6px; font-size: 12px; color: #64717d; }
+    .meta strong { font-size: 13px; color: #344654; }
+    .user .meta { justify-content: flex-end; }
+    .bubble { border: 1px solid #dfe5eb; background: white; border-radius: 12px; padding: 20px 24px; overflow-wrap: anywhere; }
+    .user .bubble { background: #e9f1ee; border-color: #d6e4dd; }
+    .commentary .bubble { background: #fafbfc; }
+    .bubble > :first-child { margin-top: 0; }
+    .bubble > :last-child { margin-bottom: 0; }
+    .bubble img { display: block; max-width: 100%; height: auto; border-radius: 5px; margin: 16px auto; }
+    a { color: #166d96; text-underline-offset: 3px; }
+    h2, h3, h4 { line-height: 1.3; }
+    pre { background: #f0f3f6; border-radius: 7px; padding: 14px; overflow: auto; }
+    code { font: .88em/1.6 ui-monospace, monospace; }
+    :not(pre) > code { background: #e6ebef; padding: 2px 5px; border-radius: 4px; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; font-size: 14px; width: 100%; margin: 16px 0; }
+    th, td { border: 1px solid #dce2e8; padding: 8px 12px; text-align: left; white-space: nowrap; }
+    th { background: #edf2f5; }
+    blockquote { border-left: 3px solid #a8bfba; margin-left: 0; padding-left: 16px; color: #52616b; }
+    .image-error { display: block; background: #fff1df; color: #794e12; padding: 10px; font-size: 13px; }
+    body.dragging main { outline: 3px dashed #245d50; outline-offset: -8px; }
+    @media (max-width: 600px) { header { padding: 12px 16px; } main { padding: 0 12px; } .message, .message.user { max-width: 100%; } .bubble { padding: 16px; } }
+  </style>
+  <!-- Vendored Marked 18.1.2 (MIT) and DOMPurify 3.4.17 (Apache-2.0/MPL-2.0).
+       License files live alongside the scripts. No CDN or build step required. -->
+  <script src="assets/viewer/marked.js"></script>
+  <script src="assets/viewer/purify.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="toolbar">
+      <h1>Chat viewer</h1>
+      <label class="open">Open exported JSON<input id="file" type="file" accept=".json,application/json"></label>
+    </div>
+    <p id="status" role="status" aria-live="polite">Select a chat export to begin. Files are read locally in your browser.</p>
+  </header>
+  <main id="chat" aria-label="Chat messages">
+    <div class="empty">
+      <h2>A conversation, with its context.</h2>
+      <p>Open or drop an <code>.otlp.json</code> file from <code>chat_ot_logs/</code>.</p>
+      <p>Keep this viewer in the project root, alongside <code>chat_ot_logs/</code><br>and <code>assets/</code>, so images can load.</p>
+    </div>
+  </main>
+  <script>
+    'use strict';
+    const chat = document.getElementById('chat');
+    const status = document.getElementById('status');
+    const projectBase = new URL('./', location.href);
+    const defaultExportBase = new URL('chat_ot_logs/', projectBase);
+
+    function setStatus(message, error = false) {
+      status.textContent = message;
+      status.classList.toggle('error', error);
+    }
+
+    function assetURL(raw, exportBase, image = false) {
+      if (!raw) return null;
+      let url;
+      try { url = new URL(raw, /^(assets|raw_data)\//.test(raw) ? projectBase : exportBase); }
+      catch { return null; }
+      if (['http:', 'https:', 'file:'].includes(url.protocol)) return url.href;
+      if (image && /^data:image\/(png|jpeg|gif|webp);base64,/i.test(raw)) return raw;
+      if (!image && url.protocol === 'mailto:') return url.href;
+      return null;
+    }
+
+    function markdown(text, exportBase) {
+      const fragment = DOMPurify.sanitize(marked.parse(text, { gfm: true }), {
+        RETURN_DOM_FRAGMENT: true,
+        USE_PROFILES: { html: true },
+        FORBID_TAGS: ['input', 'button', 'form', 'style', 'video', 'audio'],
+        FORBID_ATTR: ['style', 'srcset'],
+      });
+      fragment.querySelectorAll('a').forEach(link => {
+        const href = assetURL(link.getAttribute('href'), exportBase);
+        if (href) {
+          link.href = href;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+        } else link.removeAttribute('href');
+      });
+      fragment.querySelectorAll('img').forEach(img => {
+        const src = assetURL(img.getAttribute('src'), exportBase, true);
+        if (!src) { img.remove(); return; }
+        img.src = src;
+        img.addEventListener('error', () => {
+          const notice = document.createElement('span');
+          notice.className = 'image-error';
+          notice.textContent = `Image unavailable: ${img.alt || 'attachment'}. Keep the assets folder with the project.`;
+          img.replaceWith(notice);
+        }, { once: true });
+      });
+      fragment.querySelectorAll('table').forEach(table => {
+        const wrap = document.createElement('div');
+        wrap.className = 'table-wrap';
+        table.replaceWith(wrap);
+        wrap.append(table);
+      });
+      return fragment;
+    }
+
+    function render(documentJSON, name, exportBase = defaultExportBase) {
+      if (!Array.isArray(documentJSON.resourceLogs)) throw new Error('Expected an OTLP JSON chat export with resourceLogs.');
+      const records = documentJSON.resourceLogs.flatMap(resource =>
+        (resource.scopeLogs || []).flatMap(scope => scope.logRecords || []));
+      const fragment = document.createDocumentFragment();
+      let count = 0;
+      for (const record of records) {
+        const attrs = Object.fromEntries((record.attributes || []).map(a => [a.key, a.value?.stringValue]));
+        if (attrs['event.name'] !== 'chat.message') continue;
+        const text = record.body?.stringValue;
+        if (typeof text !== 'string') continue;
+        const role = attrs['chat.role'] || 'assistant';
+        const phase = attrs['chat.phase'];
+        const article = document.createElement('article');
+        article.className = `message ${role === 'user' ? 'user' : 'assistant'}${phase === 'commentary' ? ' commentary' : ''}`;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const author = document.createElement('strong');
+        author.textContent = role === 'user' ? 'You' : 'Assistant';
+        meta.append(author);
+        if (phase === 'commentary') {
+          const label = document.createElement('span'); label.textContent = 'Progress update'; meta.append(label);
+        }
+        if (/^\d+$/.test(String(record.timeUnixNano || ''))) {
+          const date = new Date(Number(BigInt(record.timeUnixNano) / 1000000n));
+          if (!Number.isNaN(date.valueOf())) {
+            const time = document.createElement('time');
+            time.dateTime = date.toISOString(); time.textContent = date.toLocaleString(); meta.append(time);
+          }
+        }
+        const bubble = document.createElement('div'); bubble.className = 'bubble';
+        bubble.append(markdown(text, exportBase));
+        article.append(meta, bubble); fragment.append(article); count++;
+      }
+      if (!count) throw new Error('No chat messages found in this export.');
+      chat.replaceChildren(fragment);
+      setStatus(`${name} · ${count} messages`);
+      document.title = `${name} · Chat viewer`;
+      window.scrollTo(0, 0);
+    }
+
+    async function openFile(file) {
+      if (!file) return;
+      try { render(JSON.parse(await file.text()), file.name); }
+      catch (error) { setStatus(`Could not open chat: ${error.message}`, true); }
+    }
+    document.getElementById('file').addEventListener('change', event => openFile(event.target.files[0]));
+    window.addEventListener('dragover', event => { event.preventDefault(); document.body.classList.add('dragging'); });
+    window.addEventListener('dragleave', event => { if (!event.relatedTarget) document.body.classList.remove('dragging'); });
+    window.addEventListener('drop', event => {
+      event.preventDefault(); document.body.classList.remove('dragging'); openFile(event.dataTransfer.files[0]);
+    });
+    const requested = new URLSearchParams(location.search).get('chat');
+    if (requested) {
+      (async () => {
+        try {
+          const url = new URL(requested, projectBase);
+          if (!url.href.startsWith(defaultExportBase.href) || !url.pathname.endsWith('.json')) throw new Error('Choose a JSON file inside chat_ot_logs/.');
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          render(await response.json(), url.pathname.split('/').pop(), new URL('./', url));
+        } catch (error) { setStatus(`Could not load chat: ${error.message} Use “Open exported JSON” to select the file.`, true); }
+      })();
+    }
+  </script>
+</body>
+</html>

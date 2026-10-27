@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+build/
+dist/
+chat_ot_logs/*.otlp.json

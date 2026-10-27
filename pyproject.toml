@@ -1,0 +1,16 @@
+[project]
+name = "tb-assessment"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["matplotlib>=3.10,<4"]
+
+[project.scripts]
+view-chat = "scripts.view_chat:main"
+export-chats = "scripts.export_chats:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["scripts"]
