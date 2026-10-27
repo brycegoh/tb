@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[2] / "assets" / "diagrams"
 SOURCE = BASE.parents[1] / "raw_data" / "CDNOW_master.txt"
 rows = []
 for index, line in enumerate(SOURCE.read_text().splitlines()):

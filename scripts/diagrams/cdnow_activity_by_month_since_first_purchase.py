@@ -1,6 +1,6 @@
 """Analyze calendar-month activity by customer age and observed revenue concentration.
 
-Run: uv run --with matplotlib assets/diagrams/cdnow_activity_by_month_since_first_purchase.py
+Run: uv run --with matplotlib scripts/diagrams/cdnow_activity_by_month_since_first_purchase.py
 """
 from collections import defaultdict
 import csv
@@ -13,7 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[2] / "assets" / "diagrams"
 customers = defaultdict(list)
 for line in (BASE.parents[1] / "raw_data/CDNOW_master.txt").read_text().splitlines():
     customer, date, cds, amount = line.split()

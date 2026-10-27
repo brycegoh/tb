@@ -6,7 +6,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[2] / "assets" / "diagrams"
 with (BASE / "cdnow_cohort_loan_capacity.csv").open() as source:
     rows = list(csv.DictReader(source))
 loan = 23570 * 55

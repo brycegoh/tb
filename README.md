@@ -10,10 +10,10 @@ The reasoning is set out in [cdnow_investment_thought_process.md](cdnow_investme
 
 ## Read the AI chat log
 
-Run this command from the project root with Python 3.11 or later:
+Run this command from the project root with uv installed:
 
 ```sh
-python3 scripts/view_chat.py 01a17d7a-55c9-7783-9bbb-3cddcb9f3b85
+uv run view-chat 01a17d7a-55c9-7783-9bbb-3cddcb9f3b85
 ```
 
 This opens the chat log in your browser. Keep the project folders together so chart images can load. Press **Ctrl+C** in the terminal to stop the server.
@@ -26,9 +26,10 @@ This opens the chat log in your browser. Keep the project folders together so ch
 | `cdnow_investment_thought_process.md` | Written analysis and investment recommendation, with charts. |
 | `take_home_exercise.md` | Assessment brief and investment terms. |
 | `raw_data/` | Original CDNOW transaction data and dataset notes. |
-| `assets/diagrams/` | Chart source code (`.py`), rendered charts (`.png`, `.svg`), and calculated data (`.csv`). |
+| `assets/diagrams/` | Rendered charts (`.png`, `.svg`) and calculated data (`.csv`). |
+| `scripts/diagrams/` | Python scripts that generate the charts and calculated data in `assets/diagrams/`. |
 | `chat_ot_logs/` | The AI conversation export in `.otlp.json` format. |
 | `chat_viewer.html` | Browser viewer for the exported chat logs. |
 | `assets/viewer/` | Local libraries and licences used by the chat viewer. |
-| `scripts/` | Tools to list, export, and view chats. |
+| `scripts/` | Chat tools and diagram-generation scripts. |
 | `pyproject.toml`, `uv.lock` | Python project settings and dependency versions. |

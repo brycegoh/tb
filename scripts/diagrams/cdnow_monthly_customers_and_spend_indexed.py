@@ -9,7 +9,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[2] / "assets" / "diagrams"
 with (BASE / "cdnow_monthly_customers_and_spend.csv").open() as source:
     rows = [r for r in csv.DictReader(source) if r["month"] >= "1997-04"]
 assert len(rows) == 15 and rows[0]["month"] == "1997-04"

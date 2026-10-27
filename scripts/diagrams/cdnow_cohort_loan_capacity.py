@@ -1,6 +1,6 @@
 """Historical replay and customer-mix stress; loan ceiling = cumulative revenue / 2.4.
 
-Run: uv run --with matplotlib assets/diagrams/cdnow_cohort_loan_capacity.py
+Run: uv run --with matplotlib scripts/diagrams/cdnow_cohort_loan_capacity.py
 """
 from collections import defaultdict
 import csv
@@ -13,7 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[2] / "assets" / "diagrams"
 rows = []
 total_by_customer = defaultdict(Decimal)
 for line in (BASE.parents[1] / "raw_data/CDNOW_master.txt").read_text().splitlines():
