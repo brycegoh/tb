@@ -24,7 +24,7 @@ This opens the chat log in your browser. Keep the project folders together so ch
 | File or folder | Contents |
 |---|---|
 | `cdnow_investment_thought_process.md` | Written analysis and investment recommendation, with charts. |
-| `take_home_exercise.md` | Assessment brief and investment terms. |
+| `assessment.md` | Assessment brief. |
 | `raw_data/` | Original CDNOW transaction data and dataset notes. |
 | `assets/diagrams/` | Rendered charts (`.png`, `.svg`) and calculated data (`.csv`). |
 | `scripts/diagrams/` | Python scripts that generate the charts and calculated data in `assets/diagrams/`. |

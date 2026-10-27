@@ -25,7 +25,7 @@ To answer this, we first need to understand how the customers produce revenue.
 
 First, split each month's revenue into initial and repeat purchases.
 
-![Monthly revenue from initial and repeat purchases](/Users/brycegoh/Desktop/TB/assets/diagrams/cdnow_monthly_initial_repeat_revenue.png)
+![Monthly revenue from initial and repeat purchases](assets/diagrams/cdnow_monthly_initial_repeat_revenue.png)
 
 Repeat purchases produce **69.0% of this cohort's total observed revenue**.
 
@@ -41,7 +41,7 @@ Monthly revenue has 2 parts:
 
 Put all 3 measures on the same scale. Set April 1997 to 100% for each measure.
 
-![Revenue, purchasing customers, and spend per customer relative to April 1997](/Users/brycegoh/Desktop/TB/assets/diagrams/cdnow_monthly_customers_and_spend_indexed.png)
+![Revenue, purchasing customers, and spend per customer relative to April 1997](assets/diagrams/cdnow_monthly_customers_and_spend_indexed.png)
 
 The revenue line follows the customer line closely. Average monthly spend per purchasing customer stays near its April level.
 
@@ -51,7 +51,7 @@ So, the decline mainly comes from fewer customers buying each month.
 
 Customers first purchased at different times. We therefore align them by their first purchase month to see how activity changes as time passes.
 
-![Percentage of customers purchasing in each month after their first purchase month](/Users/brycegoh/Desktop/TB/assets/diagrams/cdnow_activity_by_month_since_first_purchase.png)
+![Percentage of customers purchasing in each month after their first purchase month](assets/diagrams/cdnow_activity_by_month_since_first_purchase.png)
 
 **14.9% of customers buy in month 1, compared with 6.3% in month 17.** The overall trend declines, with some monthly increases.
 
@@ -65,7 +65,7 @@ This raises a second issue. If fewer customers return, how much revenue depends 
 
 Rank all customers by their total observed spending. Then calculate the revenue share of each top group.
 
-![Share of total revenue from the top spending customers](/Users/brycegoh/Desktop/TB/assets/diagrams/cdnow_customer_revenue_concentration.png)
+![Share of total revenue from the top spending customers](assets/diagrams/cdnow_customer_revenue_concentration.png)
 
 **The top 10% of all customers account for 50.9% of total observed revenue.** This includes initial and repeat purchases.
 
@@ -134,7 +134,7 @@ This requires a **$1,296,350 loan**. We need **$1,555,620 returned** to receive 
 
 Compare the required loan with the loan supported by each month's revenue.
 
-![Loan capacity compared with the required loan at $55 CAC](/Users/brycegoh/Desktop/TB/assets/diagrams/cdnow_loan_capacity_at_55_cac.png)
+![Loan capacity compared with the required loan at $55 CAC](assets/diagrams/cdnow_loan_capacity_at_55_cac.png)
 
 The dashed line shows the loan needed. Neither scenario reaches this line within the 18 months of data.
 
