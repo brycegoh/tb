@@ -5,4 +5,3 @@ __pycache__/
 *.egg-info/
 build/
 dist/
-chat_ot_logs/*.otlp.json
