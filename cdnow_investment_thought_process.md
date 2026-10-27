@@ -98,6 +98,8 @@ Use 2 scenarios:
 
 The base case repeats the exact observed behaviour. The worse case tests fewer customers and a weaker spending mix.
 
+Assuming historical purchasing behaviour repeats within each group, forecast revenue for a future quarterly cohort over 18 months is approximately **$2.50m in the base case** and **$1.55m in the worse case**.
+
 For each month:
 
 1. Add all cohort revenue received through that month.
